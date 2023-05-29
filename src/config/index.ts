@@ -1,0 +1,1 @@
+export const BASE_URL = process.env.GENSHINDICATOR_API_URL ?? 'http://localhost:5092/'
