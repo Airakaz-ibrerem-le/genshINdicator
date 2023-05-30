@@ -28,7 +28,7 @@ const AddCharacter = ({ onConfirm }: AddCharacterProps): JSX.Element => {
     <Container>
       <AvailableContainer>
         {data !== undefined
-          ? data.map((char) => (<CharacterCard cardPath={`/${char.path}`} id={char.id} onClick={async () => await mutateAsync(char) } />))
+          ? data.map((char) => (<CharacterCard key={char.id} cardPath={`/${char.path}`} id={char.id} onClick={async () => await mutateAsync(char) } />))
           : <></>
         }
       </AvailableContainer>

@@ -1,16 +1,15 @@
 import styled from 'styled-components'
-import { BsSearch, BsPlus } from 'react-icons/bs'
-
-import Button from '@/components/Button'
-import Header from '@/components/Header'
-import SearchBar from '@/components/SearchBar'
-import CharacterCard from '@/components/CharacterCard'
-import { useFetchOwnedCharQuery } from '@/queries/Characters'
+import { BsPlus } from 'react-icons/bs'
 import { useState } from 'react'
+
 import Modal from '@/components/Modal'
+import Button from '@/components/Button'
+import SearchBar from '@/components/SearchBar'
 import AddCharacter from '@/components/AddCharacter'
+import CharacterCard from '@/components/CharacterCard'
 import { Character } from '@/queries/Characters/Characters.types'
-import FooterButton from '@/components/FooterButton'
+import { useFetchOwnedCharQuery } from '@/queries/Characters'
+import { useRouter } from 'next/navigation'
 
 const Container = styled.div`
   width: 100%;
@@ -50,6 +49,7 @@ const CharacterContainer = styled.div`
   grid-row-gap: 10px;
   justify-content: center;
   align-items: center;
+  overflow-y: scroll;
 `
 
 const AddButton = styled(Button)`
@@ -57,38 +57,45 @@ const AddButton = styled(Button)`
   height: 80px;
 `
 
-const Footer = styled.div`
-  display: flex;
-  flex-direction: row;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-`
+const DATA: Character[] = [{
+  id: 1,
+  level: 1,
+  wanted: 90,
+  phase: 0,
+  wantedPhase: 6,
+  elementPath: 'Pyro.png',
+  name: 'Dilouc',
+  path: 'Diluc.png',
+  rating: 5,
+  skill: [{
+    level: 1,
+    type: 0,
+    wanted: 10
+  }, {
+    level: 1,
+    type: 1,
+    wanted: 10
+  }, {
+    level: 1,
+    type: 2,
+    wanted: 10
+  }]
+}]
 
-// const val: TrueObject = { obj: "toto", id: 1 }
-// const { obj } = val
-
-// const squared (val) => val.id * val.id
-// const squared ({ id }: TrueObject) => id * id
-// squared({ obj: "tata", id: 42 })
-
-// `My variable is : ${(variable) => { return variable }}` -> f"My variable is : {variable}"
-
-const Collection = (): JSX.Element => {
+const CollectionTab = (): JSX.Element => {
   const [openAddChar, setOpenAddChar] = useState<boolean>()
-  const [searchText, updateSearchText] = useState<string>("")
+  const [searchText, updateSearchText] = useState<string>('')
   const { data } = useFetchOwnedCharQuery()
+  const router = useRouter()
 
   const filterCharacter = (chars: Character[]): Character[] => {
-    if (searchText === "") {
+    if (searchText === '') {
       return chars
     }
     return chars.filter(val => val.name.toLowerCase().indexOf(searchText.toLowerCase()) !== -1)
   }
   return (
     <Container>
-      <Header title='My Collection'/>
       <ButtonSection>
         <Button onClick={() => console.log('Sorting...')}>
           SORT
@@ -97,8 +104,8 @@ const Collection = (): JSX.Element => {
       </ButtonSection>
       <CharacterContainer>
         {data !== undefined
-          ? filterCharacter(data).map(({ id, path }) => (<CharacterCard cardPath={`/${path}`} id={id} />))
-          : <></>
+          ? filterCharacter(data).map(({ id, path }) => (<CharacterCard onClick={() => router.push(`/Character/${id}`)} key={id} cardPath={`/${path}`} id={id} />))
+          : filterCharacter(DATA).map(({ id, path }) => (<CharacterCard onClick={() => router.push(`/Character/${id}`)} key={id} cardPath={`/${path}`} id={id} />))
         }
         <AddButton onClick={() => setOpenAddChar(true)}>
           <BsPlus size={80} width={80} height={80}/>
@@ -109,12 +116,8 @@ const Collection = (): JSX.Element => {
           <AddCharacter onConfirm={() => setOpenAddChar(false)} />
         </Modal>)
         : (<></>)}
-      <Footer>
-        <FooterButton title='Collection' />
-        <FooterButton title='Daily Tasks' />
-      </Footer>
     </Container>
   )
 }
 
-export default Collection
+export default CollectionTab

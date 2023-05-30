@@ -1,4 +1,4 @@
-enum SkillType {
+export enum SkillType {
   AUTO = 0,
   ELEMENTAL,
   BURST
@@ -30,5 +30,6 @@ export interface Character {
   path: string
   elementPath: string
   skill: Skill[]
-  weapon: Weapon
+  weapon?: Weapon
+  rating: number
 }

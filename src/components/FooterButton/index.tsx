@@ -2,7 +2,11 @@ import styled from 'styled-components'
 
 import { FooterButtonProps } from './FooterButton.types'
 
-const Container = styled.div`
+interface FooterButtonStyle {
+  isActive: boolean
+}
+
+const Container = styled.div <FooterButtonStyle>`
   outline: 1px solid ${({ theme }) => theme.white};
   background: ${({ theme }) => theme.backgroundColor};
   width: 100%;
@@ -10,15 +14,17 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  opacity: ${({ isActive }) => isActive ? 1 : 0.5};
 `
 
 const Title = styled.h1`
   font-size: 32px;
+  color: white;
 `
 
-const FooterButton = ({ title }: FooterButtonProps): JSX.Element => {
+const FooterButton = ({ title, isActive, onClick }: FooterButtonProps): JSX.Element => {
   return (
-    <Container>
+    <Container isActive={isActive} onClick={onClick}>
       <Title>{title}</Title>
     </Container>
   )
