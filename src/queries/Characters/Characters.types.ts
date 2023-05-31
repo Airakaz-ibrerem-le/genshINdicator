@@ -1,17 +1,9 @@
+import { Weapon, WeaponType } from "../Weapons/Weapons.types"
+
 export enum SkillType {
   AUTO = 0,
   ELEMENTAL,
   BURST
-}
-
-export interface Weapon {
-  id: number
-  level: number
-  wanted: number
-  path: string
-  name: string
-  phase: number
-  wantedPhase: number
 }
 
 export interface Skill {
@@ -31,5 +23,6 @@ export interface Character {
   elementPath: string
   skill: Skill[]
   weapon?: Weapon
+  type: WeaponType
   rating: number
 }

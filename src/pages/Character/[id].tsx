@@ -1,6 +1,7 @@
 import styled from 'styled-components'
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useCallback, useState } from 'react'
+import { useRouter as useRouterRoute } from 'next/router'
+import { useRouter as useRouterNav } from 'next/navigation'
 
 import Modal from '@/components/Modal'
 import Button from '@/components/Button'
@@ -8,6 +9,9 @@ import WeaponBanner from '@/components/WeaponBanner'
 import CharacterBanner from '@/components/CharacterBanner'
 import ModifyCharacter from '@/components/ModifyCharacter'
 import { Character } from '@/queries/Characters/Characters.types'
+import { useDeleteCharacter, useFetchOwnedCharDetailQuery } from '@/queries/Characters'
+import AddWeapon from '@/components/AddWeapon'
+import { WeaponType } from '@/queries/Weapons/Weapons.types'
 
 const Container = styled.div`
   width: 100vw;
@@ -41,9 +45,11 @@ const DATA: Character[] = [{
     type: 2,
     wanted: 10
   }],
+  type: WeaponType.CLAYMORE,
   weapon: {
     id: 42,
     name: 'Mort du loup',
+    type: WeaponType.CLAYMORE,
     level: 1,
     wanted: 90,
     phase: 1,
@@ -109,31 +115,56 @@ const DeleteButton = styled(Button)`
 `
 
 const CharacterProfile = (): JSX.Element => {
-  const router = useRouter()
+  const router = useRouterNav()
+  const routerRoute = useRouterRoute()
+  const charId = Number(routerRoute.query.id) ?? 1
+  const { data } = useFetchOwnedCharDetailQuery(charId)
+  const { mutateAsync } = useDeleteCharacter()
   const [openModify, updateOpenModify] = useState<boolean>(false)
-  const character = DATA[0]
+  const [openWeapon, updateOpenWeapon] = useState<boolean>(false)
+  const deleteChar = useCallback(async () => {
+    if (data === undefined) {
+      return
+    }
+    await mutateAsync(data)
+    router.back()
+  }, [data, mutateAsync])
+
+  if (data === undefined) {
+    return (
+      <Container>
+        Loading...
+      </Container>
+    )
+  }
+  console.log(data)
 
   return (
     <Container>
-      <CharacterBanner character={character} />
+      <CharacterBanner character={data} />
       <InfoContainer>
-        <h2>Level : {character.level} -&gt; {character.wanted}</h2>
-        <h2>Phase : {character.phase} -&gt; {character.wantedPhase}</h2>
+        <h2>Level : {data.level} -&gt; {data.wanted}</h2>
+        <h2>Phase : {data.phase} -&gt; {data.wantedPhase}</h2>
       </InfoContainer>
       <InfoContainer>
-        <h2>Auto : {character.skill[0].level} -&gt; {character.skill[0].wanted}</h2>
-        <h2>Elemental : {character.skill[1].level} -&gt; {character.skill[1].wanted}</h2>
-        <h2>Burst : {character.skill[2].level} -&gt; {character.skill[2].wanted}</h2>
+        <h2>Auto : {data.skill[0].level} -&gt; {data.skill[0].wanted}</h2>
+        <h2>Elemental : {data.skill[1].level} -&gt; {data.skill[1].wanted}</h2>
+        <h2>Burst : {data.skill[2].level} -&gt; {data.skill[2].wanted}</h2>
       </InfoContainer>
-      <WeaponBanner weapon={character.weapon} />
+      <WeaponBanner weapon={data.weapon} onClick={() => updateOpenWeapon(true)} />
       <ButtonContainer>
         <ModifyButton onClick={() => updateOpenModify(true)}>Modify</ModifyButton>
         <BackButton onClick={() => router.back()}>Back</BackButton>
-        <DeleteButton onClick={() => console.log('Delete')}>Delete</DeleteButton>
+        <DeleteButton onClick={deleteChar}>Delete</DeleteButton>
       </ButtonContainer>
       {openModify
         ? <Modal onRequestClose={() => updateOpenModify(false)}>
-          <ModifyCharacter character={character} onClose={() => updateOpenModify(false)}/>
+          <ModifyCharacter character={data} onClose={() => updateOpenModify(false)}/>
+        </Modal>
+        : <></>}
+      {openWeapon
+        ? <Modal onRequestClose={() => updateOpenWeapon(false)}>
+          <AddWeapon charId={charId} onConfirm={() => updateOpenWeapon(false)} charWeaponType={data.type}/>
         </Modal>
         : <></>}
     </Container>

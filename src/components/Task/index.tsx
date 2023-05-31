@@ -2,6 +2,7 @@ import styled from 'styled-components'
 
 import Button from '../Button'
 import type { TaskProps } from './Task.types'
+import { useTaskDone } from '@/queries/Tasks'
 
 const Container = styled.div`
   width: 100%;
@@ -43,12 +44,13 @@ const DoneButton = styled(Button)`
 `
 
 const Task = ({ task }: TaskProps): JSX.Element => {
+  const { mutateAsync } = useTaskDone()
   return (
     <Container>
       <TaskId>{task.type} - Task</TaskId>
       <Separator />
       <TaskContent>{task.text}</TaskContent>
-      <DoneButton onClick={() => console.log('Done')}>DONE</DoneButton>
+      <DoneButton onClick={async () => await mutateAsync(task)}>DONE</DoneButton>
     </Container>
   )
 }

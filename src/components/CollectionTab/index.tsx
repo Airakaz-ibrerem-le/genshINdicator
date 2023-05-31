@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 import { BsPlus } from 'react-icons/bs'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 import Modal from '@/components/Modal'
 import Button from '@/components/Button'
@@ -8,12 +9,12 @@ import SearchBar from '@/components/SearchBar'
 import AddCharacter from '@/components/AddCharacter'
 import CharacterCard from '@/components/CharacterCard'
 import { Character } from '@/queries/Characters/Characters.types'
+import { WeaponType } from '@/queries/Weapons/Weapons.types'
 import { useFetchOwnedCharQuery } from '@/queries/Characters'
-import { useRouter } from 'next/navigation'
 
 const Container = styled.div`
   width: 100%;
-  height: 100vh;
+  height: 80vh;
   display: flex;
   flex-direction: column;
   background-color: ${({ theme }) => theme.backgroundColor};
@@ -66,6 +67,7 @@ const DATA: Character[] = [{
   elementPath: 'Pyro.png',
   name: 'Dilouc',
   path: 'Diluc.png',
+  type: WeaponType.CLAYMORE,
   rating: 5,
   skill: [{
     level: 1,
@@ -105,7 +107,7 @@ const CollectionTab = (): JSX.Element => {
       <CharacterContainer>
         {data !== undefined
           ? filterCharacter(data).map(({ id, path }) => (<CharacterCard onClick={() => router.push(`/Character/${id}`)} key={id} cardPath={`/${path}`} id={id} />))
-          : filterCharacter(DATA).map(({ id, path }) => (<CharacterCard onClick={() => router.push(`/Character/${id}`)} key={id} cardPath={`/${path}`} id={id} />))
+          : <></>
         }
         <AddButton onClick={() => setOpenAddChar(true)}>
           <BsPlus size={80} width={80} height={80}/>

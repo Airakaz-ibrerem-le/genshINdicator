@@ -3,7 +3,9 @@ import styled from 'styled-components'
 import Button from '../Button'
 import { ModifyCharacterProps } from './ModifyCharacter.types'
 import { useState } from 'react'
-import { Character, Skill, SkillType, Weapon } from '@/queries/Characters/Characters.types'
+import { Character, Skill, SkillType } from '@/queries/Characters/Characters.types'
+import { Weapon } from '@/queries/Weapons/Weapons.types'
+import { useModifyOwnedChar } from '@/queries/Characters'
 
 const Container = styled.div`
   display: flex;
@@ -45,24 +47,32 @@ const StyledInput = styled.input`
 
 const ModifyCharacter = ({ onClose, character }: ModifyCharacterProps): JSX.Element => {
   const [modifications, setModifications] = useState<Character>(character)
-  const modifyField = (key: keyof Character, val: string | Skill[] | Weapon) => {
-    setModifications({ ...modifications, [key]: Number(val) })
+  const { mutateAsync } = useModifyOwnedChar()
+  const modifyField = (key: keyof Character, val: string | Skill[] | Weapon, toInt = true) => {
+    if (toInt) {
+      setModifications({ ...modifications, [key]: Number(val) })
+    }
+    else {
+      setModifications({ ...modifications, [key]: val })
+    }
   }
 
   const modifySkill = (type: SkillType, key: keyof Skill, val: string) => {
-    const skills = [...character.skill.filter(skill => skill.type !== type), { ...character.skill[type], [key]: Number(val) }]
-    modifyField('skill', skills)
+    modifications.skill[type] = { ...modifications.skill[type], [key]: Number(val) }
+    console.log(modifications.skill[type])
+    modifyField('skill', modifications.skill, false)
   }
 
   const modifyWeapon = (key: keyof Weapon, val: string) => {
     if (modifications.weapon === undefined) {
       return
     }
-    modifyField('weapon', { ...modifications.weapon, [key]: Number(val) })
+    modifyField('weapon', { ...modifications.weapon, [key]: Number(val) }, false)
   }
 
-  const onConfirm = (): void => {
+  const onConfirm = async (): Promise<void> => {
     console.log(modifications)
+    await mutateAsync(modifications)
     onClose()
   }
   return (
@@ -103,7 +113,7 @@ const ModifyCharacter = ({ onClose, character }: ModifyCharacterProps): JSX.Elem
           )
           : <></>}
       </InputContainer>
-      <ConfirmButton onClick={onConfirm}>Confirm</ConfirmButton>
+      <ConfirmButton onClick={async () => await onConfirm()}>Confirm</ConfirmButton>
     </Container>
   )
 }

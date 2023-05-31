@@ -49,10 +49,10 @@ const WeaponLevel = styled.div`
   flex-direction: column;
 `
 
-const WeaponBanner = ({ weapon }: WeaponBannerProps): JSX.Element => {
-  if (weapon === undefined) {
+const WeaponBanner = ({ weapon, onClick }: WeaponBannerProps): JSX.Element => {
+  if (weapon === undefined || weapon.id <= 0) {
     return (
-      <ErrorContainer>
+      <ErrorContainer onClick={onClick}>
         <StyledClose color='#FF0000'/>
         <h1>No Weapon Equipped !</h1>
       </ErrorContainer>
@@ -60,7 +60,7 @@ const WeaponBanner = ({ weapon }: WeaponBannerProps): JSX.Element => {
   }
 
   return (
-    <Container>
+    <Container onClick={onClick}>
       <WeaponName>Weapon : {weapon.name}</WeaponName>
       <WeaponInfo>
         <Image src={`/${weapon.path}`} alt={weapon.name} width={120} height={120}/>

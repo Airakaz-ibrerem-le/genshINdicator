@@ -1,13 +1,13 @@
 import styled from 'styled-components'
 
 import Image from 'next/image'
-import { CharacterCardProps } from './CharacterCard.types'
+import { WeaponCardProps } from './WeaponCard.types'
 
 const Container = styled.div`
   position: relative;
   display: inline-block;
   width: 80px;
-  height: 106px;
+  height: 80px;
 `
 
 const StyledImage = styled(Image)`
@@ -17,12 +17,12 @@ const StyledImage = styled(Image)`
   object-fit: cover;
 `
 
-const CharacterCard = ({ id, cardPath, onClick }: CharacterCardProps): JSX.Element => {
+const WeaponCard = ({ cardPath, onClick }: WeaponCardProps): JSX.Element => {
   return (
     <Container onClick={onClick}>
-      <StyledImage src={cardPath} alt={cardPath} fill/>
+      <StyledImage src={`/${cardPath}`} alt={cardPath} fill />
     </Container>
   )
 }
 
-export default CharacterCard
+export default WeaponCard

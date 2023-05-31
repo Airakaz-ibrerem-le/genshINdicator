@@ -7,7 +7,8 @@ import { TabHolderProps } from './TabHolder.types'
 
 const Container = styled.div`
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
+  position: relative;
   display: flex;
   flex-direction: column;
   background: ${({ theme }) => theme.backgroundColor};
@@ -17,9 +18,14 @@ const Footer = styled.div`
   display: flex;
   flex-direction: row;
   position: absolute;
+  z-index: 1;
   bottom: 0;
   left: 0;
   width: 100%;
+`
+
+const ContentWrapper = styled.div`
+  padding-bottom: 10vh;
 `
 
 const TabHolder = ({ tabs, initialTab }: TabHolderProps): JSX.Element => {
@@ -35,7 +41,9 @@ const TabHolder = ({ tabs, initialTab }: TabHolderProps): JSX.Element => {
   return (
     <Container>
       <Header title={current?.title} />
-      {current.content}
+      <ContentWrapper>
+        {current.content}
+      </ContentWrapper>
       <Footer>
         {tabs.map(({ title, key }) => (
           <FooterButton

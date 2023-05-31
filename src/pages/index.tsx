@@ -14,7 +14,7 @@ import type { TabType } from '@/components/TabHolder/TabHolder.types'
 
 const TABS: TabType[] = [{
   key: 'collection',
-  title: 'My Collection',
+  title: 'Collection',
   content: (<CollectionTab />)
 }, {
   key: 'task',
